@@ -6,7 +6,7 @@
  */
 
 import type { Entity, EntityId } from '@domaincrafters/domain/mod.ts';
-import { Optional } from '@domaincrafters/std';
+import type { Optional } from '@domaincrafters/std';
 
 /**
  * Defines a generic repository interface for managing domain entities within Domain Driven Development.
