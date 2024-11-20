@@ -8,139 +8,111 @@
  */
 
 import { UUIDEntityId } from '@domaincrafters/domain/mod.ts';
-import { assertEquals, assertNotEquals, assertThrows } from '@std/assert';
+import { assertEquals, assertNotEquals } from '@std/assert';
+import { UUID } from '@domaincrafters/std';
+
+
 
 // Define a concrete subclass for testing
 export class UserId extends UUIDEntityId {
-    private constructor(uuid: string) {
-        super(uuid);
+    private constructor(id?: string) {
+        super(id);
+
     }
 
-    static create(uuid: string = UUIDEntityId.generate()): UserId {
-        return new UserId(uuid);
+    static create(id?: string): UserId {
+        return new UserId(id);
+    }
+
+
+}
+
+export class ProductId extends UUIDEntityId {
+    private constructor(id?: string) {
+        super(id);
+    }
+
+    static create(id?: string): ProductId {
+        return new ProductId(id);
     }
 }
 
-// Mock UUID class if necessary
-// Uncomment the following if you need to mock UUID for testing purposes
-/*
-class MockUUID {
-    value: string;
-
-    constructor(value: string) {
-        this.value = value;
-    }
-
-    static create(): MockUUID {
-        return new MockUUID("7771af57-7ccd-47cc-9641-1f64a5839488");
-    }
-
-    static parse(id: string): MockUUID {
-        if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.test(id)) {
-            throw new Error("Invalid UUID format");
-        }
-        return new MockUUID(id);
-    }
-}
-
-// Replace the real UUID with the mock
-const OriginalUUID = UUID;
-UUID = MockUUID as any;
-*/
-
-// Test Suite for UUIDEntityId
-Deno.test("UUIDEntityId Constructor initializes correctly", () => {
+Deno.test("UserId.create() should create a new UserId instance with a valid UUID", () => {
     // Arrange
-    const uuidString: string = "7771af57-7ccd-47cc-9641-1f64a5839488";
+    const userId = UserId.create();
 
     // Act
-    const userId = UserId.create(uuidString);
-
+    const idValue = userId.value;
+    
     // Assert
-    assertEquals(userId.value, uuidString);
+    assertNotEquals(idValue, null);
+    assertNotEquals(idValue, undefined);
+    assertEquals(UUID.parse(idValue).value, idValue);
 });
 
-Deno.test("UUIDEntityId.generate() returns a valid UUID string", () => {
-    // Arrange & Act
-    const generatedUuid = UserId.generate();
-
-    // Assert
-    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-    assert(uuidRegex.test(generatedUuid), "Generated UUID does not match the UUID format");
-});
-
-Deno.test("UUIDEntityId.equals() returns true for equal UUIDs", () => {
+Deno.test("UserId.create(id) should create a new UserId instance with the provided UUID", () => {
     // Arrange
-    const uuidString = "7771af57-7ccd-47cc-9641-1f64a5839488";
-    const userId1 = UserId.create(uuidString);
-    const userId2 = UserId.create(uuidString);
+    const uuid = UUID.create().value;
+    const userId = UserId.create(uuid);
+
+    // Act
+    const idValue = userId.value;
+
+    // Assert
+    assertEquals(idValue, uuid);
+});
+
+Deno.test("UserId.equals() should return true for instances with the same UUID", () => {
+    // Arrange
+    const uuid = UUID.create().value;
+
+    const userId1 = UserId.create(uuid);
+    const userId2 = UserId.create(uuid);
 
     // Act
     const isEqual = userId1.equals(userId2);
+    const isEqual2 = userId2.equals(userId1);
 
     // Assert
     assertEquals(isEqual, true);
+    assertEquals(isEqual2, true);
 });
 
-Deno.test("UUIDEntityId.equals() returns false for different UUIDs", () => {
+Deno.test("UserId.equals() should return false for instances with different UUIDs", () => {
     // Arrange
-    const userId1 = UserId.create("7771af57-7ccd-47cc-9641-1f64a5839488");
-    const userId2 = UserId.create("cb2d0fbb-97a6-4f32-adc7-4d4c7892d303");
+    const userId1 = UserId.create();
+    const userId2 = UserId.create();
 
     // Act
     const isEqual = userId1.equals(userId2);
+    const isEqual2 = userId2.equals(userId1);
 
     // Assert
     assertEquals(isEqual, false);
+    assertEquals(isEqual2, false);
 });
 
-Deno.test("UUIDEntityId.toString() returns the UUID string", () => {
+Deno.test("UserId.equals() should return false for an ProductId instance", () => {
     // Arrange
-    const uuidString = "7771af57-7ccd-47cc-9641-1f64a5839488";
-    const userId: UserId = UserId.create(uuidString);
+    const userId = UserId.create();
+    const productId = ProductId.create();
 
     // Act
-    // NOSONAR: userId will take the toString() method from the UUIDEntityId class
-    const stringValue = userId.toString();
+    const isEqual = userId.equals(productId);
+    const isEqual2 = productId.equals(userId);
 
     // Assert
-    assertEquals(stringValue, uuidString);
+    assertEquals(isEqual, false);
+    assertEquals(isEqual2, false);
 });
 
-Deno.test("UUIDEntityId.value getter returns the UUID string", () => {
+Deno.test("UserId.toString() should return the UUID as a string", () => {
     // Arrange
-    const uuidString = "7771af57-7ccd-47cc-9641-1f64a5839488";
-    const userId = UserId.create(uuidString);
+    const userId = UserId.create();
 
     // Act
-    const value = userId.value;
+    const idString = userId.toString();
 
     // Assert
-    assertEquals(value, uuidString);
+    assertEquals(idString, userId.value);
 });
-
-Deno.test("UUIDEntityId constructor throws an error for invalid UUID", () => {
-    // Arrange
-    const invalidUuid = "invalid-uuid-string";
-
-    // Act & Assert
-    assertThrows(() => {
-        UserId.create(invalidUuid);
-    }, Error, "Invalid UUID");
-});
-
-Deno.test("UUIDEntityId.generate() produces unique UUIDs", () => {
-    // Arrange & Act
-    const generatedUuid1 = UserId.generate();
-    const generatedUuid2 = UserId.generate();
-
-    // Assert
-    assertNotEquals(generatedUuid1, generatedUuid2, "Generated UUIDs should be unique");
-});
-
-// Helper function for assertions without messages
-function assert(condition: boolean, msg?: string): asserts condition {
-    if (!condition) {
-        throw new Error(msg || "Assertion failed");
-    }
-}

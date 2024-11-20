@@ -32,15 +32,15 @@ import { assertEquals, assertThrows } from '@std/assert';
     }
   }
 
-  class UserId extends UUIDEntityId {
-    private constructor(uuid: string) {
-      super(uuid);
+  export class UserId extends UUIDEntityId {
+    private constructor(id?: string) {
+        super(id);
     }
-  
-    static create(uuid: string = UUIDEntityId.generate()): UserId {
-      return new UserId(uuid);
+
+    static create(id?: string): UserId {
+        return new UserId(id);
     }
-  }
+}
   
   // Test Suite for Entity
   Deno.test("Entity Constructor initializes correctly", () => {
