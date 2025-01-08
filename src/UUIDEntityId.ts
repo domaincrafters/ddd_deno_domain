@@ -36,7 +36,7 @@ import type { EntityId } from '@domaincrafters/domain/EntityId.ts';
  */
 
 export abstract class UUIDEntityId implements EntityId {
-    protected readonly _id: UUID;
+    protected readonly _id: string;
 
     /**
      * Creates an instance of UUIDEntityId.
@@ -44,7 +44,8 @@ export abstract class UUIDEntityId implements EntityId {
      * @param id - The optional UUID string value to use as the entity identifier. If not provided, a new UUID will be generated.
      */
     protected constructor(id?: string) {
-        this._id = (!id) ? UUID.create() : UUID.parse(id);
+        const uuid = id ? UUID.parse(id) : UUID.create();
+        this._id = uuid.value;
     }
 
     /**
@@ -54,7 +55,7 @@ export abstract class UUIDEntityId implements EntityId {
      * @returns `true` if both UUIDEntityIds have the same value and type, otherwise `false`.
      */
     equals(other: UUIDEntityId): boolean {
-        return this._id.equals(other._id) && this.constructor === other.constructor;
+        return this._id === (other._id) && this.constructor === other.constructor;
     }
 
     /**
@@ -72,6 +73,6 @@ export abstract class UUIDEntityId implements EntityId {
      * @returns The UUID string value.
      */
     get value(): string {
-        return this._id.value;
+        return this._id;
     }
 }
