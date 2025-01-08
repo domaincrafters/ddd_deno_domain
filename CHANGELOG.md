@@ -1,3 +1,10 @@
+## [1.1.1](https://github.com/domaincrafters/ddd_deno_domain/compare/v1.1.0...v1.1.1) (2025-01-08)
+
+
+### Bug Fixes
+
+* UUIDEntityId uses a string internally to store it's UUID value ([86c4941](https://github.com/domaincrafters/ddd_deno_domain/commit/86c494182aa2a4c6cc8d6905d3758a2740787030))
+
 # [1.1.0](https://github.com/domaincrafters/ddd_deno_domain/compare/v1.0.0...v1.1.0) (2024-11-20)
 
 
